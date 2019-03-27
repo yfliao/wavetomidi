@@ -1,8 +1,0 @@
-('output',
- 'output',
- [],
- 'DATA',
- [('output\\output.mid', 'output\\output.mid', 'DATA'),
-  ('output\\output_0.mid', 'output\\output_0.mid', 'DATA'),
-  ('output\\output_1.mid', 'output\\output_1.mid', 'DATA'),
-  ('output\\output_2.mid', 'output\\output_2.mid', 'DATA')])
