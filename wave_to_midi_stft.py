@@ -238,10 +238,7 @@
         print("INFO:","Getting_",output_propaties.key_count,"_keys_frequency",end=" ")
         key_freq = GetKeyFreq(key_count = output_propaties.key_count) #88鍵盤の周波数を取得
         print("____done")
-        _datas = FftdataToMidiLikeArray(_datas,
-                velocity_range=output_propaties.velocity_range,
-                velocity_rate=output_propaties.velocity_rate
-                ) #MIDIファイルに記載するのに適したarrayに変換する
+        _datas = FftdataToMidiLikeArray(_datas,velocity_range=0.5,velocity_rate=output_propaties.velocity_rate) #MIDIファイルに記載するのに適したarrayに変換する
         _datas = FrequencyToPitchNumber(_datas,key_freq) #frequencyをpitchに変換
         DataToMidi(_datas,output_propaties._bpm,_name=output_propaties.output_directly+"/"+output_propaties.output_name+".mid")
         print("INFO:","Exporting_MIDI_flie_is_succeeded")
@@ -672,7 +669,6 @@
                     self.output_propaties.resolution_settings = dialog.text_resolution_v.GetValue()
                     self.output_propaties.resolution = float(dialog.text_resolution.GetValue())
                     self.output_propaties.velocity_rate = float(dialog.text_velocity.GetValue())
-                    self.output_propaties.velocity_range = 0.5
                 else:
                     self.tof = False
                     print("INFO:Canceled")
@@ -720,7 +716,7 @@
             
             self.textlog = wx.TextCtrl(self.parent_panel,-1,value = "Hello WaveToMidi.\n",style=wx.TE_MULTILINE)
             
-            sys.stdout = sys.stderr = self #ログの表示箇所を破壊的に変更
+           # sys.stdout = sys.stderr = self #ログの表示箇所を破壊的に変更
             
             panel1 = wx.Panel(self.notebook, wx.ID_ANY)#説明書を開く
             panel1.SetBackgroundColour("#dabae7")
@@ -793,7 +789,6 @@
                     self.output_propaties.resolution_settings = str(dialog.text_resolution_v.GetValue())
                     self.output_propaties.resolution = float(dialog.text_resolution.GetValue())
                     self.output_propaties.velocity_rate = float(dialog.text_velocity.GetValue())
-                    self.output_propaties.velocity_range = 0.5
                 else:
                     self.tof = False
                     print("INFO:Canceled")
