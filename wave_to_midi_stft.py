@@ -747,7 +747,6 @@
             tex2.SetFont(font)
             with open("readme.txt","r") as read_me_text:
                 tex2.AppendText(str(read_me_text.read()))
-            tex2.Disable()
             layout = wx.BoxSizer(wx.HORIZONTAL)
             layout.Add(tex2,1,wx.EXPAND|wx.ALL,20)
             panel1.SetSizer(layout)
