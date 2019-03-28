@@ -1,6 +1,7 @@
 """
 使用方法
 ・noteに記載
+WaveToMidi v0.0.1｜茄子ねこarchive @nasneco｜note（ノート） https://note.mu/nasneco/n/n9cbad49c654d
 """
 使用上の注意
 ・入力するfileの名前は，spaceを含めない半角英数字を用いてください．
