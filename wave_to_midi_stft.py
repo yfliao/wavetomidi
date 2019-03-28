@@ -238,7 +238,7 @@
         print("INFO:","Getting_",output_propaties.key_count,"_keys_frequency",end=" ")
         key_freq = GetKeyFreq(key_count = output_propaties.key_count) #88鍵盤の周波数を取得
         print("____done")
-        _datas = FftdataToMidiLikeArray(_datas,velocity_range=0.5,velocity_rate=output_propaties.velocity_rate) #MIDIファイルに記載するのに適したarrayに変換する
+        _datas = FftdataToMidiLikeArray(_datas,velocity_range=output_propaties.velocity_range,velocity_rate=output_propaties.velocity_rate) #MIDIファイルに記載するのに適したarrayに変換する
         _datas = FrequencyToPitchNumber(_datas,key_freq) #frequencyをpitchに変換
         DataToMidi(_datas,output_propaties._bpm,_name=output_propaties.output_directly+"/"+output_propaties.output_name+".mid")
         print("INFO:","Exporting_MIDI_flie_is_succeeded")
@@ -259,6 +259,7 @@
         resolution_settings = "frequency"
         resolution = 0
         velocity_rate = 1
+        velocity_range = 0.5
         def __init__(self):
             wx.Dialog.__init__(self,None,-1,"advanced_setting",size=(400,600),
                                style=wx.SYSTEM_MENU|
@@ -319,6 +320,12 @@
             self.text_velocity = wx.TextCtrl(panel_taxt,wx.ID_ANY,str(self.velocity_rate)) #values
             self.text_velocity.SetHint("0 ~ 127")
             
+            text_velocity_range_v = wx.TextCtrl(panel_taxt,wx.ID_ANY,"Velocity_range") #values
+            text_velocity_range_v.SetBackgroundColour("#dabae7")
+            text_velocity_range_v.Disable()
+            self.text_velocity_range = wx.TextCtrl(panel_taxt,wx.ID_ANY,str(self.velocity_range)) #values
+            self.text_velocity_range.SetHint("0 ~ 1")
+            
             layout_1 = wx.BoxSizer(wx.VERTICAL)
             layout_1.Add(panel_taxt,8,wx.EXPAND|wx.ALL,0)
             layout_1.Add(panel_button,1,wx.EXPAND|wx.ALL,0)
@@ -347,6 +354,8 @@
             layout_3.Add(self.text_resolution,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
             layout_3.Add(text_velocity_v,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP,_box)#入力不可
             layout_3.Add(self.text_velocity,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
+            layout_3.Add(text_velocity_range_v,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP,_box)#入力不可
+            layout_3.Add(self.text_velocity_range,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
             panel_taxt.SetSizer(layout_3)
             
             
@@ -367,7 +376,7 @@
         resolution_settings = "frequency"
         resolution = 0
         velocity_rate = 1
-        
+        velocity_range = 0.5
         def __init__(self):
             wx.Dialog.__init__(self,None,-1,"import_menu",size=(400,600),
                                style=wx.SYSTEM_MENU|
@@ -469,6 +478,12 @@
             self.text_velocity = wx.TextCtrl(advanced_setting_showing,wx.ID_ANY,str(self.velocity_rate)) #values
             self.text_velocity.Disable()
             
+            text_velocity_range_v = wx.TextCtrl(advanced_setting_showing,wx.ID_ANY,"Velocity_range") #values
+            text_velocity_range_v.SetBackgroundColour("#dabae7")
+            text_velocity_range_v.Disable()
+            self.text_velocity_range = wx.TextCtrl(advanced_setting_showing,wx.ID_ANY,str(self.velocity_range)) #values
+            self.text_velocity_range.Disable()
+            
             layout_1 = wx.BoxSizer(wx.VERTICAL)
             layout_1.Add(panel_taxt,6,wx.EXPAND|wx.ALL,0)
             layout_1.Add(advanced_setting_showing,3,wx.EXPAND|wx.ALL,0)
@@ -516,6 +531,8 @@
             layout_4.Add(self.text_resolution,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
             layout_4.Add(text_velocity_v,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP,_box)#入力不可
             layout_4.Add(self.text_velocity,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
+            layout_4.Add(text_velocity_range_v,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP,_box)#入力不可
+            layout_4.Add(self.text_velocity_range,1,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,_box)
             advanced_setting_showing.SetSizer(layout_4)
         def AdvancedSetting(self,event):
             advanced_setting_dialog.export_measure_count = self.text_export_measure_count.GetValue()
@@ -524,8 +541,9 @@
             advanced_setting_dialog.output_directly = self.text_output_directly.GetValue()
             advanced_setting_dialog.ylim_max = self.ylim_max.GetValue()
             advanced_setting_dialog.ylim_min = self.ylim_min.GetValue()
-            advanced_setting_dialog.text_resolution = self.text_resolution.GetValue()
-            advanced_setting_dialog.text_velocity = self.text_velocity.GetValue()
+            advanced_setting_dialog.resolution = self.text_resolution.GetValue()
+            advanced_setting_dialog.velocity_rate = self.text_velocity.GetValue()
+            advanced_setting_dialog.velocity_range = self.text_velocity_range.GetValue()
             dialog = advanced_setting_dialog()
             result = dialog.ShowModal()
             if result == wx.ID_OK:
@@ -540,6 +558,8 @@
                 self.xlim_min.SetValue(dialog.xlim_min.GetValue())
                 self.text_velocity.SetValue(dialog.text_velocity.GetStringSelection())
                 self.text_resolution_v.SetValue(dialog.text_resolution_v.GetStringSelection())
+                self.text_velocity.SetValue(dialog.text_velocity.GetValue())
+                self.text_velocity_range.SetValue(dialog.text_velocity_range.GetValue())
                 if dialog.text_resolution_v.GetStringSelection() == "frequency" and int(dialog.text_resolution.GetValue()) >= 88:
                     self.text_resolution.SetValue(str(87))
                 else:
@@ -668,7 +688,8 @@
                     self.output_propaties.xlim = [int(dialog.xlim_min.GetValue()),int(dialog.xlim_max.GetValue())]
                     self.output_propaties.resolution_settings = dialog.text_resolution_v.GetValue()
                     self.output_propaties.resolution = float(dialog.text_resolution.GetValue())
-                    self.output_propaties.velocity_rate = float(dialog.text_velocity.GetValue())
+                    self.output_propaties.velocity_rate = int(dialog.text_velocity.GetValue())
+                    self.output_propaties.velocity_range = float(dialog.text_velocity_range.GetValue())
                 else:
                     self.tof = False
                     print("INFO:Canceled")
@@ -716,7 +737,7 @@
             
             self.textlog = wx.TextCtrl(self.parent_panel,-1,value = "Hello WaveToMidi.\n",style=wx.TE_MULTILINE)
             
-           # sys.stdout = sys.stderr = self #ログの表示箇所を破壊的に変更
+            sys.stdout = sys.stderr = self #ログの表示箇所を破壊的に変更
             
             panel1 = wx.Panel(self.notebook, wx.ID_ANY)#説明書を開く
             panel1.SetBackgroundColour("#dabae7")
@@ -788,7 +809,8 @@
                     self.output_propaties.xlim = [int(dialog.xlim_min.GetValue()),int(dialog.xlim_max.GetValue())]
                     self.output_propaties.resolution_settings = str(dialog.text_resolution_v.GetValue())
                     self.output_propaties.resolution = float(dialog.text_resolution.GetValue())
-                    self.output_propaties.velocity_rate = float(dialog.text_velocity.GetValue())
+                    self.output_propaties.velocity_rate = int(dialog.text_velocity.GetValue())
+                    self.output_propaties.velocity_range = float(dialog.text_velocity_range.GetValue())
                 else:
                     self.tof = False
                     print("INFO:Canceled")
